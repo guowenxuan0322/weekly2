@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdpx.weekly.mapper.WeekMapper">
+    <select id="selectVisibleWeek" resultType="com.zdpx.weekly.pojo.entity.Week" parameterType="com.zdpx.weekly.pojo.query.WeekQuery">
+        select e.* from week e where e.week_id in
+        (
+        select c.week_id from week c  where c.week_id in
+        (
+        select  distinct b.week_id from WEEK_VISIBLE_USER a
+        left join WEEK b on a.week_id = b.week_id
+        where a.visible_user_id = #{userId} and b.visible_type = '2'
+        <if test="weekQuery.startTime != null and weekQuery.endTime != null ">
+            and b.create_time between #{weekQuery.startTime} and #{weekQuery.endTime}
+        </if>
+        )
+        union select e.week_id from week e where  e.visible_type = '1'
+        <if test="childDeptIds != null and childDeptIds.size()!=0 ">
+            union
+            select d.week_id from week d where  d.visible_type = '0'
+            and d.user_dept  in
+            <foreach  item="item" collection="childDeptIds" index="index"  open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            <if test="weekQuery.startTime != null and weekQuery.endTime != null ">
+                and d.create_time between #{weekQuery.startTime} and #{weekQuery.endTime}
+            </if>
+        </if>
+        ) order by e.create_time desc
+    </select>
+
+</mapper>

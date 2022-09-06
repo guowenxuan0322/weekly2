@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zdpx.weekly.mapper.WeekProjectMapper">
+    <select id="selectWeekProjectPage" resultType="com.zdpx.weekly.pojo.vo.WeekProjectVo" parameterType="com.zdpx.weekly.pojo.query.WeekProjectQuery">
+        select a.*,b.* from week_project a
+        left join week b on a.week_id = b.week_id
+        where b.visible_type = '0'
+        <if test="weekProjectQuery.projectId != null ">
+            and  a.project_id = #{weekProjectQuery.projectId}
+        </if>
+        <if test="weekProjectQuery.projectName != null ">
+            and  a.project_name like concat('%',#{weekProjectQuery.projectName},'%')
+        </if>
+        <if test="weekProjectQuery.userId != null ">
+            and  b.user_id = #{weekProjectQuery.userId}
+        </if>
+        <if test="childDeptIds != null and childDeptIds.size()!=0 ">
+            and b.user_dept in
+            <foreach  item="item" collection="childDeptIds" index="index"  open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="weekProjectQuery.startTime != null and weekProjectQuery.endTime != null ">
+            and b.create_time between #{weekProjectQuery.startTime} and #{weekProjectQuery.endTime}
+        </if>
+        order by b.create_time desc
+    </select>
+</mapper>

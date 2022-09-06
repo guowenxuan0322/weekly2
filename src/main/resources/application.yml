@@ -1,0 +1,27 @@
+
+server:
+  port: 8082
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: dm.jdbc.driver.DmDriver
+    url: jdbc:dm://localhost:5236/WEEKLY2?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8
+    username: WEEKLY2
+    password: 123456789
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+swagger:
+  enable: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapping/**/*Mapper.xml
